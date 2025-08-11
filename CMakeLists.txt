@@ -12,7 +12,8 @@ set(SOURCES
 add_executable(${PROJECT_NAME} ${SOURCES})
 add_executable(sixaxispairer_gui WIN32 gui_sixaxispairer.c)
 target_compile_definitions(sixaxispairer_gui PRIVATE WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
-target_link_libraries(sixaxispairer_gui PRIVATE hid setupapi)
+target_link_libraries(sixaxispairer_gui PRIVATE hid setupapi comctl32)
+
 
 # Windows-only: link to native HID + SetupAPI (no hidapi).
 if (WIN32)
