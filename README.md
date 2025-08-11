@@ -6,8 +6,9 @@ a sixaxis controller is currently paired with.
 
 # Dependencies
 
-HID API (http://www.signal11.us/oss/hidapi/)
-
+Windows 11
+VS 2022 Native tools cmd
+`cl /EHsc /W4 /DUNICODE /D_UNICODE gui_sixaxispairer.c /link setupapi.lib hid.lib /SUBSYSTEM:WINDOWS`
 
 # Supported Platforms
 

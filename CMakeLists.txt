@@ -5,22 +5,36 @@ project(sixaxispairer VERSION 1.1.0 LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
-find_package(hidapi REQUIRED)
-
 set(SOURCES
-    main.c
+        pair_sixaxis_win.c      # your Windows-native HID code from the previous message
 )
 
-# Mac USB linking.
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    find_library(IOKIT NAMES IOKit)
-    set (PLATFORM_LIBS
-        ${IOKIT}
-    )
+add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(sixaxispairer_gui WIN32 gui_sixaxispairer.c)
+target_compile_definitions(sixaxispairer_gui PRIVATE WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
+target_link_libraries(sixaxispairer_gui PRIVATE hid setupapi)
+
+# Windows-only: link to native HID + SetupAPI (no hidapi).
+if (WIN32)
+    # Helpful warnings + UTF-8 on MSVC
+    if (MSVC)
+        target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive- /utf-8)
+    else()
+        target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+    endif()
+
+    target_compile_definitions(${PROJECT_NAME} PRIVATE WIN32_LEAN_AND_MEAN)
+
+    # These libraries are provided by the Windows SDK/MinGW toolchains
+    target_link_libraries(${PROJECT_NAME} PRIVATE hid setupapi)
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${hidapi_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} hidapi::hidapi ${PLATFORM_LIBS})
-install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+# (Optional) Keep macOS bits around but disabled by default since you said "Windows only".
+# if(APPLE)
+#   find_library(IOKIT NAMES IOKit)
+#   if (IOKIT)
+#     target_link_libraries(${PROJECT_NAME} PRIVATE ${IOKIT})
+#   endif()
+# endif()
+
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
