@@ -10,7 +10,8 @@ set(SOURCES
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
-add_executable(sixaxispairer_gui WIN32 gui_sixaxispairer.c)
+add_executable(sixaxispairer_gui WIN32 gui_sixaxispairer.c sixaxispairer_gui.rc)
+
 target_compile_definitions(sixaxispairer_gui PRIVATE WIN32_LEAN_AND_MEAN UNICODE _UNICODE)
 target_link_libraries(sixaxispairer_gui PRIVATE hid setupapi comctl32)
 
